@@ -877,6 +877,74 @@ canvas.breadth-donut { width:100%; height:100px; display:block; }
 .conf-table td { padding: 7px 10px; border-bottom: 1px solid var(--border); color: var(--text2); }
 .conf-table tr:last-child td { border-bottom: none; }
 .conf-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
+/* ─── HELP MODAL ─── */
+.help-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.75);
+  z-index: 500;
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 24px 16px; overflow-y: auto;
+}
+.help-box {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-lg);
+  width: 800px; max-width: 96vw;
+  padding: 24px 28px;
+  position: relative;
+}
+.help-close {
+  position: absolute; top: 14px; right: 16px;
+  background: none; border: none; color: var(--text3);
+  font-size: 20px; cursor: pointer; line-height: 1;
+}
+.help-close:hover { color: var(--text); }
+.help-h1 {
+  font-family: var(--sans); font-size: 17px; font-weight: 700;
+  color: var(--teal); margin-bottom: 4px; letter-spacing: -.02em;
+}
+.help-sub {
+  font-family: var(--mono); font-size: 10px; color: var(--text3);
+  text-transform: uppercase; letter-spacing: .1em; margin-bottom: 20px;
+}
+.help-section { margin-bottom: 22px; }
+.help-section-title {
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  color: var(--teal); text-transform: uppercase; letter-spacing: .08em;
+  margin-bottom: 10px; padding-bottom: 5px;
+  border-bottom: 1px solid var(--border);
+}
+.help-p {
+  font-family: var(--mono); font-size: 11px; color: var(--text2);
+  line-height: 1.7; margin-bottom: 6px;
+}
+.help-p strong { color: var(--text); font-weight: 600; }
+.help-p .hl { color: var(--teal); }
+.help-p .hl-amber { color: var(--amber); }
+.help-p .hl-red { color: var(--red); }
+.help-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;
+}
+.help-item {
+  background: var(--bg3); border-radius: var(--radius);
+  padding: 8px 12px; font-family: var(--mono); font-size: 10px;
+}
+.help-item-title { color: var(--text); font-weight: 600; margin-bottom: 2px; }
+.help-item-desc  { color: var(--text3); line-height: 1.5; }
+.help-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 10px; margin-bottom: 8px; }
+.help-table th { color: var(--text3); text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--border2); font-size: 9px; text-transform: uppercase; letter-spacing: .06em; }
+.help-table td { padding: 5px 8px; border-bottom: 1px solid var(--border); color: var(--text2); vertical-align: top; }
+.help-table tr:last-child td { border-bottom: none; }
+.help-badge { display: inline-block; padding: 1px 7px; border-radius: 10px; font-size: 9px; font-weight: 600; }
+.hb-credit { background: rgba(34,197,94,.12); color: var(--green); }
+.hb-debit  { background: rgba(59,130,246,.12); color: var(--accent); }
+.help-warn { background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.25); border-radius: var(--radius); padding: 8px 12px; font-family: var(--mono); font-size: 10px; color: var(--amber); margin-top: 10px; line-height: 1.6; }
+.help-tabs-nav { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 16px; }
+.help-tab-btn { padding: 4px 12px; font-family: var(--mono); font-size: 10px; border-radius: 20px; border: 1px solid var(--border2); background: var(--bg3); color: var(--text3); cursor: pointer; transition: all .15s; }
+.help-tab-btn:hover { border-color: var(--teal); color: var(--teal); }
+.help-tab-btn.active { background: rgba(20,184,166,.15); border-color: var(--teal); color: var(--teal); }
+.help-tab-panel { display: none; }
+.help-tab-panel.active { display: block; }
 </style>
 </head>
 <body>
@@ -891,6 +959,7 @@ canvas.breadth-donut { width:100%; height:100px; display:block; }
   </div>
   <div class="header-status">
     <button onclick="toggleTheme()" id="themeBtn" style="background:none;border:1px solid var(--border);border-radius:6px;padding:3px 10px;font-family:var(--mono);font-size:11px;color:var(--text2);cursor:pointer;margin-right:10px">☀ Light</button>
+    <button onclick="showHelp()" style="background:none;border:1px solid var(--border);border-radius:6px;padding:3px 10px;font-family:var(--mono);font-size:11px;color:var(--text2);cursor:pointer;margin-right:10px">? Help</button>
     <div class="status-dot" id="statusDot"></div>
     <span id="statusText">No token</span>
   </div>
@@ -1361,6 +1430,172 @@ canvas.breadth-donut { width:100%; height:100px; display:block; }
     </div>
 
   </div>
+</div>
+
+<!-- HELP MODAL -->
+<div id="helpModal" class="help-overlay" style="display:none" onclick="if(event.target===this)closeHelp()">
+<div class="help-box">
+  <button class="help-close" onclick="closeHelp()">✕</button>
+  <div class="help-h1">⬡ Stock Scanner — Use Me &amp; About Me</div>
+  <div class="help-sub">Complete feature guide · Upstox V2/V3 API · NSE/BSE · Options · Live Charts</div>
+
+  <div class="help-tabs-nav">
+    <button class="help-tab-btn active" onclick="helpTab('setup')">🔑 Setup</button>
+    <button class="help-tab-btn" onclick="helpTab('screener')">⬡ Screener</button>
+    <button class="help-tab-btn" onclick="helpTab('indexlive')">◈ Index Live</button>
+    <button class="help-tab-btn" onclick="helpTab('mtf')">⚡ MTF Signals</button>
+    <button class="help-tab-btn" onclick="helpTab('options')">◎ Options Desk</button>
+    <button class="help-tab-btn" onclick="helpTab('oistrategy')">⊞ OI &amp; Strategy</button>
+    <button class="help-tab-btn" onclick="helpTab('tools')">⊕ Trade Tools</button>
+    <button class="help-tab-btn" onclick="helpTab('notes')">⚠ Notes</button>
+  </div>
+
+  <!-- SETUP -->
+  <div id="htab-setup" class="help-tab-panel active">
+    <div class="help-section">
+      <div class="help-section-title">🔑 First-Time Setup</div>
+      <div class="help-p">1. Log in to your <strong>Upstox account</strong> → Developer Console → copy your daily <span class="hl">Access Token</span></div>
+      <div class="help-p">2. Paste it in the <strong>Upstox Token</strong> box (top of any sidebar) and click <strong>Save Token</strong></div>
+      <div class="help-p">3. Token expires <strong>daily at midnight</strong> — paste a fresh one each trading day before market open</div>
+      <div class="help-p">4. Token is held in <strong>browser memory only</strong> — never stored or transmitted elsewhere</div>
+    </div>
+    <div class="help-warn">⚠ Without a token: Index Live charts and screener candles still work. Options Desk, OI Chain, MTF OI analysis, Sector Correlation, and Market Breadth require a valid token.</div>
+  </div>
+
+  <!-- SCREENER -->
+  <div id="htab-screener" class="help-tab-panel">
+    <div class="help-section">
+      <div class="help-section-title">⬡ Stock Screener</div>
+      <div class="help-p">Scans hundreds to thousands of instruments using <strong>120 days of daily candles</strong> and scores each one with technical indicators + Bulkowski chart patterns. Results populate live as each stock completes.</div>
+      <div class="help-p"><strong>Exchange options:</strong></div>
+      <div class="help-grid">
+        <div class="help-item"><div class="help-item-title">NIFTY 50 Stocks</div><div class="help-item-desc">All 50 index constituents. Fastest — ~4 min at default delay. Best for daily morning scan.</div></div>
+        <div class="help-item"><div class="help-item-title">NSE Equity (~2,000)</div><div class="help-item-desc">All NSE-listed equities. Takes 20–30 min. Use Symbol filter to narrow.</div></div>
+        <div class="help-item"><div class="help-item-title">BSE Equity (~5,500)</div><div class="help-item-desc">Full BSE universe. Longest scan. Best run overnight or with high Max stocks limit.</div></div>
+        <div class="help-item"><div class="help-item-title">NSE F&amp;O (~200)</div><div class="help-item-desc">Futures &amp; options eligible stocks. Good liquid mid/large-cap universe.</div></div>
+        <div class="help-item"><div class="help-item-title">NIFTY50 Weekly OI Chain</div><div class="help-item-desc">ATM ±5 strikes. Fetches 5m intraday candles per strike + full pattern analysis. 11 rows.</div></div>
+        <div class="help-item"><div class="help-item-title">BANKNIFTY / FINNIFTY OI</div><div class="help-item-desc">Same as above for Bank and Fin Nifty monthly chains.</div></div>
+      </div>
+      <div class="help-p"><strong>Columns:</strong> Sector · LTP · Chg% · OI · OI Chg · VWAP · SMA20 · SMA50 · Slope% · ROC5% · ROC20% · Patterns · ST Score · ST Verdict · LT Score · LT Verdict</div>
+      <div class="help-p"><strong>Verdicts:</strong> <span class="hl">Strong Bull / Bull</span> · Neutral · <span class="hl-red">Bear / Strong Bear</span> — based on 10 weighted conditions per stock</div>
+      <div class="help-p"><strong>Tips:</strong> Sort by ST Score descending for top bullish picks. Use <strong>Group by Sector</strong> to see which sectors are outperforming. Export to CSV for further analysis.</div>
+    </div>
+  </div>
+
+  <!-- INDEX LIVE -->
+  <div id="htab-indexlive" class="help-tab-panel">
+    <div class="help-section">
+      <div class="help-section-title">◈ Index Live</div>
+      <div class="help-p">Fetches live intraday candles for indices via Upstox V3 API and runs Bulkowski pattern detection in real time.</div>
+      <div class="help-p"><strong>Indices:</strong> NIFTY50 · BANKNIFTY · SENSEX · NIFTY IT · FINNIFTY · MIDCAP</div>
+      <div class="help-p"><strong>Timeframes:</strong> 5m · 15m · 30m · 1H · 4H · 1D — each fetches historical + today's live intraday candles merged</div>
+      <div class="help-p"><strong>Chart features:</strong></div>
+      <div class="help-grid">
+        <div class="help-item"><div class="help-item-title">VWAP + Bands</div><div class="help-item-desc">Amber dashed line = VWAP. ±1σ and ±2σ bands shown. Price at +2σ = stretched, mean reversion likely.</div></div>
+        <div class="help-item"><div class="help-item-title">SMA20</div><div class="help-item-desc">Blue line. Price above = bullish bias for that timeframe.</div></div>
+        <div class="help-item"><div class="help-item-title">Pattern Bands</div><div class="help-item-desc">Teal = bullish patterns, Red = bearish, Amber = neutral. Confidence % shown on right. Hover for name.</div></div>
+        <div class="help-item"><div class="help-item-title">OHLC Tooltip</div><div class="help-item-desc">Hover over any candle to see Open/High/Low/Close. 1D view shows date in tooltip.</div></div>
+      </div>
+      <div class="help-p"><strong>⚡ Multi-TF Confluence:</strong> Analyses all 6 timeframes in parallel. Shows per-TF verdict table + cross-timeframe pattern confluence table.</div>
+      <div class="help-p"><strong>Auto-Refresh:</strong> Fires every 30s during 9am–4pm market hours. Live price shown with <span class="hl">● LIVE</span> indicator (requires token).</div>
+    </div>
+  </div>
+
+  <!-- MTF -->
+  <div id="htab-mtf" class="help-tab-panel">
+    <div class="help-section">
+      <div class="help-section-title">⚡ MTF Signal Engine</div>
+      <div class="help-p">Analyses 3 Higher Timeframe layers to generate <strong>Buy / Sell / Wait</strong> signals for 1m, 3m, 5m execution — with OI and ADX incorporated.</div>
+      <div class="help-p"><strong>HTF Layer weights:</strong> 4H = 40% (macro trend) · 30m = 35% (swing confirm) · 15m = 25% (entry window)</div>
+      <div class="help-p"><strong>Each HTF card scores 10 conditions:</strong> EMA9/21 cross · VWAP position · RSI zone · RSI extreme fade · SMA20/50 alignment · Price vs SMA20 · Slope · ROC momentum · Bulkowski patterns · +DI/-DI</div>
+      <div class="help-p"><strong>ADX row</strong> in each card: ▲ Bull Trend (ADX≥25, +DI>-DI) · ▼ Bear Trend · ◆ Weak Trend · — Ranging</div>
+      <div class="help-p"><strong>Execution signal confidence adjustments:</strong></div>
+      <div class="help-grid">
+        <div class="help-item"><div class="help-item-title">ADX ≥30 aligned</div><div class="help-item-desc">+8% confidence — strong trend confirmed</div></div>
+        <div class="help-item"><div class="help-item-title">ADX opposes direction</div><div class="help-item-desc">−10% confidence — trend fighting the signal</div></div>
+        <div class="help-item"><div class="help-item-title">PCR confirms</div><div class="help-item-desc">+7% confidence — options market agrees</div></div>
+        <div class="help-item"><div class="help-item-title">OI buildup aligns</div><div class="help-item-desc">+5% confidence — smart money positioning</div></div>
+      </div>
+      <div class="help-p"><strong>Levels (ATR-based):</strong> Entry · Stop Loss · Target 1 (1.5× ATR) · Target 2 (2.5× ATR) · R:R ratio. ATR multiplier scales with TF: 1m=0.5×, 3m=0.8×, 5m=1.2×</div>
+      <div class="help-p"><strong>Alert:</strong> Browser notification fires when confidence ≥65% and signal changes. Click Allow when prompted.</div>
+    </div>
+  </div>
+
+  <!-- OPTIONS -->
+  <div id="htab-options" class="help-tab-panel">
+    <div class="help-section">
+      <div class="help-section-title">◎ Options Desk</div>
+      <div class="help-p">Live options analytics: Greeks · OI Wall · IVR/IVP · PCR trend. Select index + expiry → click <strong>▶ Load Options Data</strong>.</div>
+      <div class="help-p"><strong>Expiry dates</strong> auto-populate using correct 2025+ NSE/BSE schedule: NIFTY50 = weekly Tuesday · BANKNIFTY/FINNIFTY = monthly last Tuesday · SENSEX = weekly Thursday.</div>
+      <div class="help-grid">
+        <div class="help-item"><div class="help-item-title">Delta</div><div class="help-item-desc">CE/PE: how much option moves per ₹1 in index. ATM ≈ 0.5. Deep ITM → 1.0.</div></div>
+        <div class="help-item"><div class="help-item-title">Gamma</div><div class="help-item-desc">Rate of change of delta. Highest at ATM near expiry — gamma risk spikes last 2 days.</div></div>
+        <div class="help-item"><div class="help-item-title">Theta</div><div class="help-item-desc">Daily time decay in ₹. Negative for buyers, positive for sellers. Accelerates near expiry.</div></div>
+        <div class="help-item"><div class="help-item-title">Vega</div><div class="help-item-desc">₹ change per 1% IV move. Buy when IVR low (cheap vega), sell when IVR high.</div></div>
+      </div>
+      <div class="help-p"><strong>OI Wall Chart:</strong> CE OI (red, left = resistance) vs PE OI (green, right = support). Max CE OI strike = strong resistance. Max PE OI strike = strong support. These are the key levels to watch.</div>
+      <div class="help-p"><strong>IVR Guide:</strong> IVR &lt;30 = cheap premiums → buy options · IVR 30–70 = normal · IVR &gt;70 = expensive → sell options</div>
+      <div class="help-p"><strong>PCR:</strong> Put-Call Ratio. PCR &gt;1.2 = more puts = bullish. PCR &lt;0.8 = more calls = bearish. Sparkline shows trend over last 20 loads.</div>
+    </div>
+  </div>
+
+  <!-- OI & STRATEGY -->
+  <div id="htab-oistrategy" class="help-tab-panel">
+    <div class="help-section">
+      <div class="help-section-title">⊞ OI &amp; Strategy</div>
+      <div class="help-p">Load data on Options Desk first, then switch here to see ranked strategies and the full option chain.</div>
+      <table class="help-table">
+        <thead><tr><th>Strategy</th><th>Type</th><th>Best When</th><th>Risk</th></tr></thead>
+        <tbody>
+          <tr><td>Long Straddle</td><td><span class="help-badge hb-debit">DEBIT</span></td><td>IVR &lt;30 · far expiry · big move expected</td><td>Both premiums paid</td></tr>
+          <tr><td>Long Strangle</td><td><span class="help-badge hb-debit">DEBIT</span></td><td>IVR &lt;30 · before events</td><td>Both premiums paid</td></tr>
+          <tr><td>Bull Call Spread</td><td><span class="help-badge hb-debit">DEBIT</span></td><td>Low IV · bullish PCR · 7–20 DTE</td><td>Net premium paid</td></tr>
+          <tr><td>Bear Put Spread</td><td><span class="help-badge hb-debit">DEBIT</span></td><td>Low IV · bearish PCR · 7–20 DTE</td><td>Net premium paid</td></tr>
+          <tr><td>Short Iron Condor</td><td><span class="help-badge hb-credit">CREDIT</span></td><td>IVR &gt;70 · neutral PCR · 15–30 DTE</td><td>Spacing − credit</td></tr>
+          <tr><td>Short Iron Butterfly</td><td><span class="help-badge hb-credit">CREDIT</span></td><td>IVR &gt;70 · spot near ATM · 5–15 DTE</td><td>Spacing − credit</td></tr>
+          <tr><td>Short Straddle</td><td><span class="help-badge hb-credit">CREDIT</span></td><td>IVR &gt;70 · near expiry · range expected</td><td>⚠ Unlimited</td></tr>
+          <tr><td>Covered Call / CSP</td><td><span class="help-badge hb-credit">CREDIT</span></td><td>High IV · bullish · income generation</td><td>Notional</td></tr>
+        </tbody>
+      </table>
+      <div class="help-p">Each strategy card shows <strong>exact strikes</strong>, legs, max profit/loss, breakeven, ideal DTE, and a <strong>signal checklist</strong> of conditions passing or failing right now. Top 3 auto-expanded.</div>
+      <div class="help-p"><strong>Option Chain Table:</strong> CE side (OI, OI change, IV%, LTP) | Strike | PE side. ATM row highlighted in amber. IV computed per strike via Black-Scholes Newton-Raphson.</div>
+    </div>
+  </div>
+
+  <!-- TRADE TOOLS -->
+  <div id="htab-tools" class="help-tab-panel">
+    <div class="help-section">
+      <div class="help-section-title">⊕ Trade Tools</div>
+      <div class="help-grid">
+        <div class="help-item"><div class="help-item-title">Position Size Calculator</div><div class="help-item-desc">Enter account size, risk %, entry, stop loss, lot size → exact units and lots so you never risk more than your defined % per trade. Updates live as you type.</div></div>
+        <div class="help-item"><div class="help-item-title">CPR &amp; Pivot Levels</div><div class="help-item-desc">Enter prev H/L/C (or auto-fill from Upstox). Calculates TC, PP, BC + R1/R2/R3 + S1/S2/S3. CPR width = expected range. Narrow CPR = trending day.</div></div>
+        <div class="help-item"><div class="help-item-title">Market Breadth</div><div class="help-item-desc">Advance / Decline / Unchanged for 20 Nifty 50 stocks. A/D ratio &gt;2 = broad rally. Breadth diverging from index = weak move.</div></div>
+        <div class="help-item"><div class="help-item-title">Sector Correlation</div><div class="help-item-desc">Live % change for 8 sector indices vs NIFTY50 with relative bars. Sector rotation leads index by 1–2 candles often.</div></div>
+      </div>
+      <div class="help-p"><strong>Economic Calendar:</strong> Key 2026 events — RBI MPC, CPI/WPI/IIP, US Fed, F&amp;O expiry, Q1 results season — with <span class="hl-red">HIGH</span> / <span class="hl-amber">MED</span> / LOW impact and days-away countdown. Avoid entering trades just before HIGH impact events.</div>
+    </div>
+  </div>
+
+  <!-- NOTES -->
+  <div id="htab-notes" class="help-tab-panel">
+    <div class="help-section">
+      <div class="help-section-title">⚠ Important Notes</div>
+      <div class="help-p">• <strong>Token expires daily</strong> — paste a fresh Upstox token each morning before 9:15am</div>
+      <div class="help-p">• <strong>Not financial advice</strong> — all signals are based on technical indicators only. Always use a stop-loss. Past patterns do not guarantee future performance.</div>
+      <div class="help-p">• <strong>No data stored</strong> — everything runs in your browser. Closing the tab clears all data.</div>
+      <div class="help-p">• <strong>Rate limits (HTTP 429)</strong> — if scans fail, increase the Delay (ms) setting in Screener sidebar.</div>
+      <div class="help-p">• <strong>IVR is approximate</strong> — uses a fixed 10–45% IV range proxy. For precise IVR, 52-week historical IV data is needed.</div>
+      <div class="help-p">• <strong>OI Chain ATM ±5 strikes</strong> — fetches live spot price to find ATM, then ±5 × strike spacing. If spot fetch fails, uses chain midpoint.</div>
+      <div class="help-p">• <strong>Nifty 50 constituent list</strong> — current as of June 2026 including BEL, ETERNAL, INDIGO, JIOFIN, MAXHEALTH additions. If a stock is replaced, update the list in source.</div>
+      <div class="help-p">• <strong>Expiry schedule (post Sep 2025):</strong> NIFTY50 = weekly Tuesday · BANKNIFTY = monthly last Tuesday (weekly discontinued Nov 2024) · SENSEX = weekly Thursday.</div>
+      <div class="help-p">• <strong>Theme toggle</strong> — ☀ Light / ☾ Dark in the top-right header.</div>
+    </div>
+    <div class="help-warn">
+      ⚠ This tool is for educational and analytical purposes only. Options trading involves significant risk of loss. Never trade with money you cannot afford to lose. Always consult a SEBI-registered financial advisor before making investment decisions.
+    </div>
+  </div>
+
+</div>
 </div>
 
 <script>
@@ -4065,6 +4300,24 @@ function renderStrategyAdvisor(ctx) {
   var oiMeta = document.getElementById('oiTabMeta');
   if (oiMeta) oiMeta.textContent = instrName + ' · ' + new Date().toLocaleTimeString('en-IN') + ' · click to view';
 }
+// ═══════════════════════════════════════════════
+// HELP MODAL
+// ═══════════════════════════════════════════════
+function showHelp() {
+  document.getElementById('helpModal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closeHelp() {
+  document.getElementById('helpModal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+function helpTab(id) {
+  document.querySelectorAll('.help-tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.help-tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('htab-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeHelp(); });
 </script>
 </body>
 </html>
