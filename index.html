@@ -1374,16 +1374,220 @@ canvas.breadth-donut { width:100%; height:100px; display:block; }
   <div class="tools-wrap">
 
     <!-- Position Sizer -->
-    <div class="tool-card">
-      <div class="tool-card-title">⊕ Position Size Calculator</div>
-      <div class="tool-input-row"><div class="tool-input-lbl">Account Size (₹)</div><input type="number" class="tool-input" id="psAccount" value="500000" oninput="calcPositionSize()"></div>
-      <div class="tool-input-row"><div class="tool-input-lbl">Risk per trade (%)</div><input type="number" class="tool-input" id="psRisk" value="1" step="0.25" oninput="calcPositionSize()"></div>
-      <div class="tool-input-row"><div class="tool-input-lbl">Entry Price (₹)</div><input type="number" class="tool-input" id="psEntry" value="23500" oninput="calcPositionSize()"></div>
-      <div class="tool-input-row"><div class="tool-input-lbl">Stop Loss Price (₹)</div><input type="number" class="tool-input" id="psSL" value="23350" oninput="calcPositionSize()"></div>
-      <div class="tool-input-row"><div class="tool-input-lbl">Lot Size (for F&O)</div><input type="number" class="tool-input" id="psLot" value="25" oninput="calcPositionSize()"></div>
-      <div class="tool-result" id="psResult">
-        <div class="tool-result-big" id="psShares">—</div>
-        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:4px" id="psDetail">Enter values above</div>
+    <div class="tool-card" style="grid-column:span 2">
+      <div class="tool-card-title">📐 Position Size Calculator</div>
+
+      <!-- INSTRUMENT SELECTOR -->
+      <div style="margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border)">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--teal);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">🎯 Select Instrument</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+          <button class="mtf-chip active" id="psMode-stock" onclick="psSetMode('stock',this)">📊 Nifty 50 Stock</button>
+          <button class="mtf-chip" id="psMode-index" onclick="psSetMode('index',this)">🏦 Index Options</button>
+        </div>
+
+        <!-- STOCK MODE -->
+        <div id="psStockSelector" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <select class="field-input" id="psStockSel" style="min-width:160px" onchange="psFetchPrice()">
+            <option value="">-- Select Stock --</option>
+            <option value="NSE_EQ|INE002A01018">RELIANCE</option>
+            <option value="NSE_EQ|INE467B01029">TCS</option>
+            <option value="NSE_EQ|INE040A01034">HDFCBANK</option>
+            <option value="NSE_EQ|INE397D01024">BHARTIARTL</option>
+            <option value="NSE_EQ|INE090A01021">ICICIBANK</option>
+            <option value="NSE_EQ|INE009A01021">INFOSYS</option>
+            <option value="NSE_EQ|INE062A01020">SBIN</option>
+            <option value="NSE_EQ|INE030A01027">HINDUNILVR</option>
+            <option value="NSE_EQ|INE154A01025">ITC</option>
+            <option value="NSE_EQ|INE296A01032">BAJFINANCE</option>
+            <option value="NSE_EQ|INE237A01036">KOTAKBANK</option>
+            <option value="NSE_EQ|INE018A01030">LT</option>
+            <option value="NSE_EQ|INE860A01027">HCLTECH</option>
+            <option value="NSE_EQ|INE585B01010">MARUTI</option>
+            <option value="NSE_EQ|INE238A01034">AXISBANK</option>
+            <option value="NSE_EQ|INE021A01026">ASIANPAINT</option>
+            <option value="NSE_EQ|INE044A01036">SUNPHARMA</option>
+            <option value="NSE_EQ|INE280A01028">TITAN</option>
+            <option value="NSE_EQ|INE481G01011">ULTRACEMCO</option>
+            <option value="NSE_EQ|INE075A01022">WIPRO</option>
+            <option value="NSE_EQ|INE752E01010">POWERGRID</option>
+            <option value="NSE_EQ|INE733E01010">NTPC</option>
+            <option value="NSE_EQ|INE213A01029">ONGC</option>
+            <option value="NSE_EQ|INE019A01038">JSWSTEEL</option>
+            <option value="NSE_EQ|INE306A01021">TATAMOTORS</option>
+            <option value="NSE_EQ|INE081A01020">TATASTEEL</option>
+            <option value="NSE_EQ|INE101A01026">M&amp;M</option>
+            <option value="NSE_EQ|INE423A01024">ADANIENT</option>
+            <option value="NSE_EQ|INE742F01042">ADANIPORTS</option>
+            <option value="NSE_EQ|INE522F01014">COALINDIA</option>
+            <option value="NSE_EQ|INE917I01010">BAJAJ-AUTO</option>
+            <option value="NSE_EQ|INE918I01026">BAJAJFINSV</option>
+            <option value="NSE_EQ|INE089A01031">DRREDDY</option>
+            <option value="NSE_EQ|INE059A01026">CIPLA</option>
+            <option value="NSE_EQ|INE066A01021">EICHERMOT</option>
+            <option value="NSE_EQ|INE669C01036">TECHM</option>
+            <option value="NSE_EQ|INE361B01024">DIVISLAB</option>
+            <option value="NSE_EQ|INE123W01016">SBILIFE</option>
+            <option value="NSE_EQ|INE795G01014">HDFCLIFE</option>
+            <option value="NSE_EQ|INE437A01024">APOLLOHOSP</option>
+            <option value="NSE_EQ|INE263A01024">BEL</option>
+            <option value="NSE_EQ|INE646L01027">INDIGO</option>
+            <option value="NSE_EQ|INE721A01047">SHRIRAMFIN</option>
+            <option value="NSE_EQ|INE849A01020">TRENT</option>
+            <option value="NSE_EQ|INE158A01026">HEROMOTOCO</option>
+            <option value="NSE_EQ|INE239A01024">NESTLEIND</option>
+          </select>
+          <button class="btn" onclick="psFetchPrice()" style="white-space:nowrap">⬇ Fetch Live Price</button>
+          <span id="psFetchStatus" style="font-family:var(--mono);font-size:10px;color:var(--text3)"></span>
+        </div>
+
+          <div id="psOptionsSelector" style="display:none;flex-direction:column;gap:8px">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <select class="field-input" id="psIndexSel" style="min-width:140px" onchange="psOptionsChanged();psFetchSpotPrice()">
+              <option value="NSE_INDEX|Nifty 50">NIFTY 50</option>
+              <option value="NSE_INDEX|Nifty Bank">BANKNIFTY</option>
+              <option value="BSE_INDEX|SENSEX">SENSEX</option>
+              <option value="NSE_INDEX|Nifty Fin Service">FINNIFTY</option>
+            </select>
+            <select class="field-input" id="psOptType" style="min-width:90px" onchange="psOptionsChanged()">
+              <option value="CE">CE (Call)</option>
+              <option value="PE">Put (PE)</option>
+            </select>
+            <input type="number" class="tool-input" id="psStrike" placeholder="Strike e.g. 23400" style="width:140px" oninput="psOptionsChanged()">
+            <button class="btn" onclick="psFetchOptionPrice()" style="white-space:nowrap">⬇ Fetch Premium</button>
+          </div>
+          <!-- Index target pts row -->
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <div style="font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap">Index Target (pts):</div>
+            <button class="tf-btn" onclick="psSetIndexTarget(50)">+50</button>
+            <button class="tf-btn" onclick="psSetIndexTarget(100)">+100</button>
+            <button class="tf-btn" onclick="psSetIndexTarget(150)">+150</button>
+            <button class="tf-btn" onclick="psSetIndexTarget(200)">+200</button>
+            <button class="tf-btn" onclick="psSetIndexTarget(300)">+300</button>
+            <input type="number" class="tool-input" id="psIndexTarget" placeholder="Custom pts" style="width:100px" oninput="psApplyIndexTarget()">
+            <span style="font-family:var(--mono);font-size:9px;color:var(--text3)" id="psIndexTargetNote"></span>
+          </div>
+          <!-- Live spot price row -->
+          <div id="psSpotRow" style="display:flex;align-items:center;gap:12px;background:var(--bg3);border-radius:var(--radius);padding:8px 12px">
+            <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">Live Spot:</span>
+            <span id="psSpotPrice" style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--text)">—</span>
+            <span id="psSpotChg" style="font-family:var(--mono);font-size:11px">—</span>
+            <span id="psSpotATM" style="font-family:var(--mono);font-size:10px;color:var(--amber)"></span>
+            <button class="btn" onclick="psFetchSpotPrice()" style="margin-left:auto;padding:3px 10px;font-size:10px">↻ Refresh</button>
+            <span id="psSpotStatus" style="font-family:var(--mono);font-size:9px;color:var(--text3)"></span>
+          </div>
+          <span id="psOptStatus" style="font-family:var(--mono);font-size:10px;color:var(--text3)"></span>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <!-- INPUTS -->
+        <div>
+          <div style="font-family:var(--mono);font-size:10px;color:var(--teal);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">⚙️ Inputs</div>
+          <div class="tool-input-row">
+            <div class="tool-input-lbl">💼 Capital (₹)</div>
+            <input type="number" class="tool-input" id="psAccount" value="500000" oninput="calcPositionSize()">
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:2px">Total capital you want to size trades from</div>
+          </div>
+          <div class="tool-input-row">
+            <div class="tool-input-lbl">🛡️ Risk per trade (%)</div>
+            <input type="number" class="tool-input" id="psRisk" value="1" step="0.25" min="0.1" max="10" oninput="calcPositionSize()">
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:2px">Recommended: 0.5%–2% depending on your style</div>
+          </div>
+          <div class="tool-input-row">
+            <div class="tool-input-lbl" id="psEntryLbl">🎯 Entry Price (₹)</div>
+            <input type="number" class="tool-input" id="psEntry" value="23500" oninput="calcPositionSize()">
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:2px" id="psEntryHint">Stock price per share</div>
+          </div>
+          <div class="tool-input-row">
+            <div class="tool-input-lbl">🧯 Stop Loss Price (₹)</div>
+            <input type="number" class="tool-input" id="psSL" value="23350" oninput="calcPositionSize()">
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:2px">Long: SL below entry · Short: SL above entry</div>
+          </div>
+          <!-- Pivot level auto-fill -->
+          <div style="background:var(--bg3);border-radius:var(--radius);border:1px solid var(--border);padding:10px 12px;margin-bottom:10px">
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">📐 Pivot Levels — SL &amp; Target</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;align-items:center">
+              <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">Period:</span>
+              <button class="tf-btn active" id="pvt-D" onclick="psPivotPeriod('D',this)">Daily</button>
+              <button class="tf-btn" id="pvt-W" onclick="psPivotPeriod('W',this)">Weekly</button>
+              <button class="tf-btn" id="pvt-M" onclick="psPivotPeriod('M',this)">Monthly</button>
+              <button class="tf-btn" id="psLoadPivots" onclick="psLoadAndShowPivots()" style="background:rgba(20,184,166,.1);border-color:var(--teal);color:var(--teal);margin-left:4px">⬇ Load Pivots</button>
+            </div>
+            <!-- SL level buttons -->
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:4px">🧯 SL Level:</div>
+            <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px" id="psSLButtons">
+              <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">Load pivots to see levels</span>
+            </div>
+            <!-- Target level buttons -->
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:4px">🎯 Target Level:</div>
+            <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px" id="psTargetButtons">
+              <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">Load pivots to see levels</span>
+            </div>
+            <div id="psPivotStatus" style="font-family:var(--mono);font-size:9px;color:var(--teal);line-height:1.5"></div>
+          </div>
+          <!-- Target price direct input (hidden R:R, replaced by direct target) -->
+          <div class="tool-input-row" style="display:none">
+            <input type="number" id="psRR" value="2" step="0.5" min="0.5" oninput="calcPositionSize()">
+          </div>
+          <div class="tool-input-row">
+            <div class="tool-input-lbl">🎯 Target Price (₹)</div>
+            <input type="number" class="tool-input" id="psTargetPrice" placeholder="Auto-filled from pivot" oninput="psTargetChanged()">
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:2px" id="psTargetHint">Select a target level above or enter manually</div>
+          </div>
+          <div class="tool-input-row">
+            <div class="tool-input-lbl">📦 Lot Size</div>
+            <input type="number" class="tool-input" id="psLot" value="1" oninput="calcPositionSize()">
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:2px" id="psLotHint">1 for stocks · 25/30/15 for F&amp;O</div>
+          </div>
+        </div>
+        <!-- OUTPUTS -->
+        <div>
+          <div style="font-family:var(--mono);font-size:10px;color:var(--teal);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">📊 Results</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+            <div class="tool-result" style="margin-top:0">
+              <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:3px">📦 Quantity</div>
+              <div class="tool-result-big" id="psShares">—</div>
+              <div style="font-family:var(--mono);font-size:9px;color:var(--text3)" id="psLots">—</div>
+            </div>
+            <div class="tool-result" style="margin-top:0">
+              <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:3px">💰 Capital Used</div>
+              <div class="tool-result-big" id="psCapUsed" style="font-size:16px">—</div>
+              <div style="font-family:var(--mono);font-size:9px;color:var(--text3)" id="psCapPct">—</div>
+            </div>
+            <div class="tool-result" style="margin-top:0">
+              <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:3px">🛡️ Risk Amount</div>
+              <div class="tool-result-big" id="psRiskAmt" style="font-size:16px;color:var(--red)">—</div>
+              <div style="font-family:var(--mono);font-size:9px;color:var(--text3)" id="psRiskUnit">—</div>
+            </div>
+            <div class="tool-result" style="margin-top:0">
+              <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:3px">🎯 Target Price</div>
+              <div class="tool-result-big" id="psTarget" style="font-size:16px;color:var(--green)">—</div>
+              <div style="font-family:var(--mono);font-size:9px;color:var(--text3)" id="psTargetPnl">—</div>
+              <div style="font-family:var(--mono);font-size:9px;color:var(--amber);margin-top:3px" id="psTargetNote">—</div>
+            </div>
+          </div>
+          <div id="psSummary" style="background:var(--bg3);border-radius:var(--radius);padding:10px 12px;font-family:var(--mono);font-size:11px;margin-bottom:10px">
+            <span id="psTradeType" style="font-weight:700">—</span> &nbsp;·&nbsp;
+            <span id="psRRDisplay">R:R —</span><br>
+            <span style="color:var(--text3);font-size:10px">If SL hits: </span><span id="psSLHit" style="color:var(--red);font-size:10px">—</span>
+            &nbsp;&nbsp;
+            <span style="color:var(--text3);font-size:10px">If Target hits: </span><span id="psTgtHit" style="color:var(--green);font-size:10px">—</span>
+          </div>
+          <!-- Risk Quality Score -->
+          <div style="background:var(--bg3);border-radius:var(--radius);padding:10px 12px;margin-bottom:10px">
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em">⚖️ Risk Quality Score</div>
+            <div id="psRiskScore" style="font-family:var(--mono);font-size:16px;font-weight:700;margin-bottom:5px">—</div>
+            <div id="psRiskScoreDetail" style="font-family:var(--mono);font-size:9px;line-height:1.8;flex-wrap:wrap;display:flex"></div>
+          </div>
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:4px">🥧 Capital Allocation — Used vs Remaining</div>
+          <div style="height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;margin-bottom:4px">
+            <div id="psCapBar" style="height:100%;background:linear-gradient(90deg,var(--teal),var(--accent));border-radius:4px;transition:width .4s;width:0%"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;color:var(--text3)">
+            <span>Used: <span id="psCapUsed2" style="color:var(--teal)">₹0</span></span>
+            <span>Remaining: <span id="psCapRem" style="color:var(--text2)">₹0</span></span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1814,7 +2018,8 @@ async function getInstruments(exchange) {
 }
 
 async function getHistorical(instrKey, fromDate, toDate) {
-  const enc = encodeURIComponent(instrKey);
+  // Upstox V2 historical-candle requires raw pipe | in URL path, not %7C
+  const enc = encodeURIComponent(instrKey).replace(/%7C/gi, '|');
   const url = `${BASE}/historical-candle/${enc}/day/${toDate}/${fromDate}`;
   const data = await fetchJSON(url, { headers: { Authorization: token } });
   return (data.data && data.data.candles) ? data.data.candles : [];
@@ -3926,26 +4131,755 @@ function renderOptChain(data, atmStrike, S, T, r, baseIV) {
 // TRADE TOOLS
 // ═══════════════════════════════════════════════
 
+// ── Position Sizer — Instrument Mode ──
+// Updated NSE F&O lot sizes (effective Nov 2024)
+// NIFTY: 65 | BANKNIFTY: 35 | FINNIFTY: 65 | SENSEX: 20
+const PS_LOT_SIZES = {
+  'NSE_INDEX|Nifty 50':          65,
+  'NSE_INDEX|Nifty Bank':        30,
+  'BSE_INDEX|SENSEX':            20,
+  'NSE_INDEX|Nifty Fin Service': 60,
+};
+const PS_LOT_CAPITAL = {
+  'NSE_INDEX|Nifty 50':          12094,
+  'NSE_INDEX|Nifty Bank':        13500,  // ~₹450 ATM premium × 30
+  'BSE_INDEX|SENSEX':            16000,
+  'NSE_INDEX|Nifty Fin Service': 13200,  // ~₹220 ATM premium × 60
+};
+const PS_STRIKE_SPACING = {
+  'NSE_INDEX|Nifty 50':          50,
+  'NSE_INDEX|Nifty Bank':        100,
+  'BSE_INDEX|SENSEX':            100,
+  'NSE_INDEX|Nifty Fin Service': 50,
+};
+
+let psCurrentMode = 'stock'; // 'stock' or 'index'
+
+function psSetMode(mode, el) {
+  psCurrentMode = mode;
+  document.querySelectorAll('#psMode-stock,#psMode-index').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('psStockSelector').style.display   = mode === 'stock' ? 'flex' : 'none';
+  document.getElementById('psOptionsSelector').style.display = mode === 'index' ? 'flex' : 'none';
+  if (mode === 'stock') {
+    document.getElementById('psEntryLbl').textContent  = '🎯 Entry Price (₹)';
+    document.getElementById('psEntryHint').textContent = 'Stock price per share';
+    document.getElementById('psLotHint').textContent   = '1 for stocks · change for F&O';
+    document.getElementById('psLot').value = '1';
+  } else {
+    document.getElementById('psEntryLbl').textContent  = '🎯 Premium / Entry (₹)';
+    document.getElementById('psEntryHint').textContent = 'Option premium per unit';
+    psOptionsChanged();
+    psFetchSpotPrice();
+  }
+  calcPositionSize();
+}
+
+async function psFetchPrice() {
+  const key = document.getElementById('psStockSel').value;
+  if (!key || !token) {
+    document.getElementById('psFetchStatus').textContent = token ? 'Select a stock first' : 'Token required';
+    return;
+  }
+  const statusEl = document.getElementById('psFetchStatus');
+  statusEl.textContent = 'Fetching…'; statusEl.style.color = 'var(--text3)';
+  try {
+    const opts = { headers: { Authorization: token } };
+    // Try /quotes first for full data (change %)
+    let ltp = 0, chg = 0;
+    try {
+      const data = await fetchJSON(`${BASE}/market-quote/quotes?instrument_key=${encodeURIComponent(key)}`, opts);
+      // Upstox quotes response key can be either pipe or colon format — try both
+      const d = data.data || {};
+      const q = d[key] || d[key.replace('|',':')] || Object.values(d)[0];
+      if (q) {
+        ltp = parseFloat(q.last_price || q.ltp || 0);
+        chg = parseFloat(q.net_change_percentage || q.change || 0);
+      }
+    } catch(e) {}
+    // Fallback to /ltp if quotes failed
+    if (!ltp) {
+      const data2 = await fetchJSON(`${BASE}/market-quote/ltp?instrument_key=${encodeURIComponent(key)}`, opts);
+      const d2 = data2.data || {};
+      const q2 = d2[key] || d2[key.replace('|',':')] || Object.values(d2)[0];
+      ltp = parseFloat(q2?.last_price || q2?.ltp || 0);
+    }
+    if (!ltp) throw new Error('No price data returned. Market may be closed.');
+    const name = document.getElementById('psStockSel').selectedOptions[0]?.text || '';
+    document.getElementById('psEntry').value = ltp.toFixed(2);
+    // Smart SL for stocks: 1% below entry (intraday standard)
+    // If stock price > 5000, use tighter 0.7% to keep SL in reasonable ₹ amount
+    const slPct = ltp > 5000 ? 0.007 : ltp > 1000 ? 0.01 : 0.015;
+    document.getElementById('psSL').value    = (ltp * (1 - slPct)).toFixed(2);
+    document.getElementById('psLot').value   = '1';
+    psSmartFill('stock', ltp, ltp * (1 - slPct));
+    statusEl.textContent = name + ' · ₹' + ltp.toFixed(2) + (chg ? ' (' + (chg>=0?'+':'') + chg.toFixed(2) + '%)' : '');
+    statusEl.style.color = chg >= 0 ? 'var(--green)' : 'var(--red)';
+    calcPositionSize();
+    // Auto-load pivot levels for the selected stock
+    psLoadAndShowPivots();
+  } catch(e) {
+    statusEl.textContent = 'Error: ' + e.message;
+    statusEl.style.color = 'var(--red)';
+  }
+}
+
+function psOptionsChanged() {
+  const indexKey = document.getElementById('psIndexSel')?.value || 'NSE_INDEX|Nifty 50';
+  const lot = PS_LOT_SIZES[indexKey] || 65;
+  const approxCap = PS_LOT_CAPITAL[indexKey] || 12094;
+  document.getElementById('psLot').value = lot;
+  document.getElementById('psLotHint').textContent =
+    'Lot size: ' + lot + ' units · 1 lot ≈ ₹' + approxCap.toLocaleString('en-IN') + ' capital · ' + indexKey.split('|')[1];
+}
+
+async function psFetchSpotPrice() {
+  const indexKey = document.getElementById('psIndexSel')?.value || 'NSE_INDEX|Nifty 50';
+  const statusEl = document.getElementById('psSpotStatus');
+  const priceEl  = document.getElementById('psSpotPrice');
+  const chgEl    = document.getElementById('psSpotChg');
+  const atmEl    = document.getElementById('psSpotATM');
+  if (statusEl) statusEl.textContent = 'Fetching…';
+  try {
+    const opts = token ? { headers: { Authorization: token } } : {};
+    // Use LTP endpoint — works without token for indices
+    const data = await fetchJSON(`${BASE}/market-quote/ltp?instrument_key=${encodeURIComponent(indexKey)}`, opts);
+    const d = data.data || {};
+    const q = d[indexKey] || d[indexKey.replace('|',':')] || Object.values(d)[0];
+    const ltp = parseFloat(q?.last_price || q?.ltp || 0);
+    if (!ltp) throw new Error('No price');
+
+    // Compute ATM strike
+    const spacing = PS_STRIKE_SPACING[indexKey] || 50;
+    const atm = Math.round(ltp / spacing) * spacing;
+
+    if (priceEl) priceEl.textContent = '₹' + ltp.toLocaleString('en-IN', {maximumFractionDigits:2});
+    if (atmEl)   atmEl.textContent   = '→ ATM: ' + atm.toLocaleString('en-IN');
+    if (statusEl) statusEl.textContent = new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+
+    // Try to get change % via quotes
+    try {
+      const d2 = await fetchJSON(`${BASE}/market-quote/quotes?instrument_key=${encodeURIComponent(indexKey)}`, opts);
+      const q2 = (d2.data||{})[indexKey] || (d2.data||{})[indexKey.replace('|',':')] || Object.values(d2.data||{})[0];
+      const chg = parseFloat(q2?.net_change_percentage || q2?.change_percentage || 0);
+      if (chgEl) {
+        chgEl.textContent  = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%';
+        chgEl.style.color  = chg >= 0 ? 'var(--green)' : 'var(--red)';
+      }
+    } catch(e) {
+      if (chgEl) { chgEl.textContent = ''; }
+    }
+
+    // Auto-fill ATM strike in the strike input if empty
+    const strikeEl = document.getElementById('psStrike');
+    if (strikeEl && !strikeEl.value) strikeEl.value = atm;
+
+  } catch(e) {
+    if (priceEl)  priceEl.textContent  = '—';
+    if (statusEl) statusEl.textContent = 'Error: ' + e.message;
+  }
+}
+
+async function psFetchOptionPrice() {
+  const indexKey = document.getElementById('psIndexSel')?.value;
+  const optType  = document.getElementById('psOptType')?.value;
+  const strike   = parseFloat(document.getElementById('psStrike')?.value);
+  const statusEl = document.getElementById('psOptStatus');
+  if (!indexKey || !strike) { statusEl.textContent = 'Enter index + strike'; return; }
+  if (!token) { statusEl.textContent = 'Token required'; return; }
+  statusEl.textContent = 'Fetching option chain…'; statusEl.style.color = 'var(--text3)';
+  try {
+    const expiry = mtfNearestExpiry(indexKey.includes('Nifty 50')?'NIFTY50':indexKey.includes('Bank')?'BANKNIFTY':indexKey.includes('SENSEX')?'SENSEX':'FINNIFTY');
+    const data   = await fetchJSON(`${BASE}/option/chain?instrument_key=${encodeURIComponent(indexKey)}&expiry_date=${expiry}`, {headers:{Authorization:token}});
+    const chain  = data.data || [];
+    const nearest = chain.reduce((a,b) => Math.abs(b.strike_price-strike)<Math.abs(a.strike_price-strike)?b:a, chain[0]);
+    if (!nearest) throw new Error('Strike not found');
+    const opt = optType==='CE' ? nearest.call_options : nearest.put_options;
+    const md  = opt?.market_data || opt || {};
+    const ltp = parseFloat(md?.ltp || md?.last_price || 0);
+    const iv  = parseFloat(md?.greeks?.iv || 0);
+    const oi  = parseFloat(md?.oi || md?.open_interest || 0);
+    if (!ltp) throw new Error('No premium data for this strike');
+
+    // Smart SL for options:
+    // If premium < 50 → SL at 40% loss (tight, cheap options move fast)
+    // If premium 50–200 → SL at 50% loss (standard)
+    // If premium > 200 → SL at 30% loss (expensive options, tighter SL)
+    const slPct = ltp < 50 ? 0.40 : ltp > 200 ? 0.30 : 0.50;
+    const sl    = ltp * (1 - slPct);
+
+    document.getElementById('psEntry').value = ltp.toFixed(2);
+    document.getElementById('psSL').value    = sl.toFixed(2);
+    document.getElementById('psLot').value   = PS_LOT_SIZES[indexKey] || 65;
+
+    const fmtOI = v => v>=1e5?(v/1e5).toFixed(1)+'L':v.toFixed(0);
+    statusEl.textContent = nearest.strike_price+' '+optType+' · ₹'+ltp.toFixed(2)+' · SL ₹'+sl.toFixed(2)+' ('+((slPct)*100).toFixed(0)+'% loss rule) · OI '+fmtOI(oi)+' · Exp '+expiry;
+    statusEl.style.color = 'var(--teal)';
+    psSmartFill('options', ltp, sl);
+    calcPositionSize();
+  } catch(e) {
+    statusEl.textContent = 'Error: '+e.message;
+    statusEl.style.color = 'var(--red)';
+  }
+}
+
+let psPivotPer = 'D'; // D = daily, W = weekly, M = monthly
+
+// Extract candles belonging to the last complete week or month
+// cans: V3 candles array (newest first), period: 'W' or 'M'
+function getPeriodCandles(cans, period) {
+  const today = new Date(); today.setHours(0,0,0,0);
+  let start, end;
+  if (period === 'W') {
+    // Last complete Mon–Fri week
+    const dow = today.getDay(); // 0=Sun,6=Sat
+    const daysToLastFri = dow === 0 ? 2 : dow === 6 ? 1 : dow + 1;
+    end   = new Date(today); end.setDate(today.getDate() - daysToLastFri);
+    start = new Date(end);   start.setDate(end.getDate() - 4);
+  } else {
+    // Last complete calendar month
+    end   = new Date(today.getFullYear(), today.getMonth(), 0);    // last day of prev month
+    start = new Date(today.getFullYear(), today.getMonth() - 1, 1); // first day of prev month
+  }
+  const filtered = cans.filter(c => {
+    const d = new Date(c[0]); d.setHours(0,0,0,0);
+    return d >= start && d <= end;
+  });
+  // Fallback: if date filtering gives nothing (holiday/weekend edge case), use last N candles
+  if (!filtered.length) return cans.slice(0, period === 'W' ? 5 : 22);
+  return filtered;
+}
+
+function psPivotPeriod(p, el) {
+  psPivotPer = p;
+  document.querySelectorAll('#pvt-D,#pvt-W,#pvt-M').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ── Pivot Level Selector ──
+async function psLoadAndShowPivots() {
+  const entry    = parseFloat(document.getElementById('psEntry')?.value) || 0;
+  const statusEl = document.getElementById('psPivotStatus');
+  const slBtns   = document.getElementById('psSLButtons');
+  const tgtBtns  = document.getElementById('psTargetButtons');
+  if (!entry) { if(statusEl) statusEl.textContent = 'Fetch price first'; return; }
+  const periodLabel = psPivotPer==='W' ? 'Weekly' : psPivotPer==='M' ? 'Monthly' : 'Daily';
+  if(statusEl) { statusEl.textContent = 'Loading '+periodLabel+' pivots…'; statusEl.style.color='var(--text3)'; }
+
+  const isOpts = psCurrentMode === 'index';
+  let H, L, C, instrKey, instrLabel;
+
+  // ── Fetch OHLC for correct period ──
+  // Daily  → previous single day OHLC  → /market-quote/ohlc?interval=1d
+  // Weekly → Mon–Fri of last complete week → sum high/low/close from 5 daily candles
+  // Monthly → last complete calendar month → sum from ~22 daily candles
+
+  if (isOpts) {
+    instrKey   = document.getElementById('psIndexSel')?.value || 'NSE_INDEX|Nifty 50';
+    instrLabel = instrKey.split('|')[1];
+  } else {
+    instrKey   = document.getElementById('psStockSel')?.value;
+    instrLabel = document.getElementById('psStockSel')?.selectedOptions[0]?.text || 'stock';
+    if (!instrKey) { if(statusEl){statusEl.textContent='⚠ Select a stock first';statusEl.style.color='var(--amber)';}return; }
+    if (!token)    { if(statusEl){statusEl.textContent='⚠ Token required';statusEl.style.color='var(--amber)';}return; }
+  }
+
+  try {
+    const enc   = encodeURIComponent(instrKey);
+    const opts2 = token ? {headers:{Authorization:token}} : {};
+    const tod   = toDateStr(new Date());
+
+    if (psPivotPer === 'D') {
+      // Daily: use ohlc?interval=1d — returns previous day H/L/C
+      if (!isOpts) {
+        const data = await fetchJSON(`${BASE}/market-quote/ohlc?instrument_key=${enc}&interval=1d`, {headers:{Authorization:token}});
+        const q = Object.values(data.data||{})[0];
+        if (!q) throw new Error('No OHLC data');
+        const o = q.ohlc||{};
+        H = parseFloat(o.high); L = parseFloat(o.low); C = parseFloat(o.close);
+      } else {
+        const frm = toDateStr(new Date(Date.now()-7*24*3600*1000));
+        const d   = await fetchJSON(`https://api.upstox.com/v3/historical-candle/${enc.replace(/%7C/gi,'|')}/days/1/${tod}/${frm}`, opts2);
+        const cans = d.data?.candles; if(!cans?.length) throw new Error('No candles');
+        const prev = cans.find(c=>toDateStr(new Date(c[0]))!==tod)||cans[0];
+        H=parseFloat(prev[2]); L=parseFloat(prev[3]); C=parseFloat(prev[4]);
+      }
+    } else {
+      // Weekly / Monthly — fetch sufficient daily 1d candles and aggregate
+      // Both stocks and indices: use ohlc?interval=1d in a loop OR fetch from a wider range
+      // Strategy: fetch 45 days of daily data using repeated ohlc calls is not feasible.
+      // Instead use the working 1d endpoint to get today's OHLC, then derive weekly/monthly
+      // from the historical-candle endpoint properly.
+      //
+      // For STOCKS: use V2 historical-candle with the NSE_EQ|ISIN key but via the
+      // market-quote/ohlc endpoint which returns the latest candle for various intervals.
+      // Valid Upstox OHLC intervals: 1d, 1week, 1month (these ARE valid per API docs)
+      // The 400 error was because "1week" != "1week" — let's try the correct casing.
+      //
+      // Confirmed valid values from Upstox API docs: "1d", "1week", "1month"
+      // If still 400, fall back to aggregating from multiple 1d fetches via quotes.
+
+      const interval = psPivotPer==='W' ? '1week' : '1month';
+      let gotData = false;
+
+      if (!isOpts) {
+        // Try ohlc endpoint with weekly/monthly interval
+        try {
+          const data = await fetchJSON(`${BASE}/market-quote/ohlc?instrument_key=${enc}&interval=${interval}`, {headers:{Authorization:token}});
+          const q = Object.values(data.data||{})[0];
+          const o = q?.ohlc||{};
+          H = parseFloat(o.high)||0; L = parseFloat(o.low)||0; C = parseFloat(o.close)||0;
+          if (H && L && C) gotData = true;
+        } catch(e2) { /* fall through to candle aggregation */ }
+
+        // Fallback: fetch 45 days of 1d candles via V3 (works with NSE_EQ|ISIN)
+        if (!gotData) {
+          const daysBack = psPivotPer==='W' ? 21 : 65;
+          const frm2 = toDateStr(new Date(Date.now()-daysBack*24*3600*1000));
+          const d2 = await fetchJSON(`https://api.upstox.com/v3/historical-candle/${enc.replace(/%7C/gi,'|')}/days/1/${tod}/${frm2}`, {headers:{Authorization:token}});
+          const cans2 = d2.data?.candles||[];
+          if (!cans2.length) throw new Error('No historical candles for '+instrLabel);
+          const periodCans = getPeriodCandles(cans2, psPivotPer);
+          if (!periodCans.length) throw new Error('No candles found for period');
+          H = Math.max(...periodCans.map(c=>parseFloat(c[2])));
+          L = Math.min(...periodCans.map(c=>parseFloat(c[3])));
+          C = parseFloat(periodCans[0][4]);
+        }
+      } else {
+        // Index: V3 daily candles aggregated
+        const daysBack = psPivotPer==='W' ? 21 : 65;
+        const frm2 = toDateStr(new Date(Date.now()-daysBack*24*3600*1000));
+        const d2 = await fetchJSON(`https://api.upstox.com/v3/historical-candle/${enc.replace(/%7C/gi,'|')}/days/1/${tod}/${frm2}`, opts2);
+        const cans2 = d2.data?.candles||[];
+        if (!cans2.length) throw new Error('No candles');
+        const periodCans = getPeriodCandles(cans2, psPivotPer);
+        if (!periodCans.length) throw new Error('No candles for period');
+        H = Math.max(...periodCans.map(c=>parseFloat(c[2])));
+        L = Math.min(...periodCans.map(c=>parseFloat(c[3])));
+        C = parseFloat(periodCans[0][4]);
+      }
+    }
+
+    if (!H||!L||!C||isNaN(H)) throw new Error('OHLC values empty');
+    if(statusEl) statusEl.textContent = instrLabel+' '+periodLabel+' OHLC: H ₹'+H.toFixed(isOpts?0:2)+' · L ₹'+L.toFixed(isOpts?0:2)+' · C ₹'+C.toFixed(isOpts?0:2);
+  } catch(e) {
+    if(statusEl){ statusEl.textContent='⚠ '+e.message; statusEl.style.color='var(--red)'; }
+    return;
+  }
+
+  if (!H||!L||!C) { if(statusEl){statusEl.textContent='⚠ No OHLC — fill CPR section or select stock';statusEl.style.color='var(--amber)';}return; }
+
+  const P  = (H+L+C)/3;
+  const BC = (H+L)/2;
+  const TC = (P-BC)+P;
+  const R1 = 2*P-L, R2 = P+(H-L), R3 = H+2*(P-L);
+  const S1 = 2*P-H, S2 = P-(H-L), S3 = L-2*(H-P);
+
+  // For options: compare pivot against SPOT price (not premium entry)
+  // For stocks: compare pivot against entry (stock price)
+  const spotEl   = document.getElementById('psSpotPrice');
+  const spotStr  = spotEl ? spotEl.textContent.replace(/[₹,\s]/g,'') : '';
+  const spotPrice = parseFloat(spotStr) || 0;
+  const compareRef = isOpts ? spotPrice : entry;
+
+  if (compareRef > 0 && Math.abs(P - compareRef) / compareRef > 0.25) {
+    if(statusEl){ statusEl.textContent = '⚠ Pivot PP ₹'+P.toFixed(0)+' doesn\'t match '+(isOpts?'spot':'entry')+' ₹'+compareRef.toFixed(0)+'. Fetch '+instrLabel+' price first.'; statusEl.style.color='var(--red)'; }
+    return;
+  }
+
+  // ── Delta helper for options premium at index level ──
+  function premiumAtIndexLevel(indexLevel) {
+    if (!isOpts) return indexLevel;
+    const indexKey  = document.getElementById('psIndexSel')?.value || 'NSE_INDEX|Nifty 50';
+    const spacing   = PS_STRIKE_SPACING[indexKey] || 50;
+    const strikeEl  = document.getElementById('psStrike');
+    const strike    = parseFloat(strikeEl?.value) || (spotPrice || compareRef);
+    const optType   = document.getElementById('psOptType')?.value || 'CE';
+    const strikesOTM = Math.abs(strike - (spotPrice||compareRef)) / spacing;
+    const delta     = strikesOTM < 1 ? 0.50 : strikesOTM < 2 ? 0.35 : 0.22;
+    const gamma     = strikesOTM < 1 ? 0.002 : 0.001;
+    const indexMove = indexLevel - (spotPrice || compareRef);
+    const premMove  = delta * indexMove + 0.5 * gamma * indexMove * indexMove;
+    return Math.max(0.05, entry + premMove);
+  }
+
+  const f = v => isOpts ? '₹'+v.toFixed(0) : '₹'+v.toFixed(2);
+  const fmtBtn = (name, indexVal, premVal, type) => {
+    const color     = type==='support' ? 'rgba(239,68,68,.15)' : 'rgba(34,197,94,.15)';
+    const textColor = type==='support' ? 'var(--red)' : 'var(--green)';
+    const border    = type==='support' ? 'rgba(239,68,68,.4)' : 'rgba(34,197,94,.4)';
+    const displayVal = isOpts
+      ? name+' '+f(indexVal)+' → prem ₹'+premVal.toFixed(1)
+      : name+' '+f(indexVal);
+    const fn = type==='support'
+      ? `psSelectSL(${premVal.toFixed(2)},'${name} ${indexVal.toFixed(0)}',this)`
+      : `psSelectTarget(${premVal.toFixed(2)},'${name} ${indexVal.toFixed(0)}',this)`;
+    return `<button onclick="${fn}" style="font-family:var(--mono);font-size:10px;padding:4px 10px;border-radius:20px;border:1px solid ${border};background:${color};color:${textColor};cursor:pointer;white-space:nowrap">${displayVal}</button>`;
+  };
+
+  const allLevels = [
+    {name:'S3',v:S3},{name:'S2',v:S2},{name:'S1',v:S1},
+    {name:'BC',v:BC},{name:'PP',v:P},{name:'TC',v:TC},
+    {name:'R1',v:R1},{name:'R2',v:R2},{name:'R3',v:R3}
+  ].sort((a,b)=>a.v-b.v);
+
+  // For stocks: SL = pivot levels below entry price
+  // For options: SL = index pivot levels below spot price (→ convert to premium)
+  const ref = isOpts ? (spotPrice||compareRef) : entry;
+
+  const supports    = allLevels.filter(l => l.v < ref * 0.999).reverse(); // nearest below first
+  const resistances = allLevels.filter(l => l.v > ref * 1.001);           // nearest above first
+
+  slBtns.innerHTML  = supports.length
+    ? supports.map(l => fmtBtn(l.name, l.v, premiumAtIndexLevel(l.v), 'support')).join('')
+    : '<span style="font-family:var(--mono);font-size:9px;color:var(--text3)">No support level below</span>';
+
+  tgtBtns.innerHTML = resistances.length
+    ? resistances.map(l => fmtBtn(l.name, l.v, premiumAtIndexLevel(l.v), 'resist')).join('')
+    : '<span style="font-family:var(--mono);font-size:9px;color:var(--text3)">No resistance level above</span>';
+
+  // Auto-select nearest SL and target
+  if (supports.length)    psSelectSL(premiumAtIndexLevel(supports[0].v),    supports[0].name+' '+supports[0].v.toFixed(0),    slBtns.querySelector('button'));
+  if (resistances.length) psSelectTarget(premiumAtIndexLevel(resistances[0].v), resistances[0].name+' '+resistances[0].v.toFixed(0), tgtBtns.querySelector('button'));
+
+  if (isOpts) {
+    if(statusEl){ statusEl.textContent = instrLabel+' '+periodLabel+' pivots · PP ₹'+P.toFixed(0)+' · Spot ₹'+(spotPrice||compareRef).toFixed(0)+' · H:'+H.toFixed(0)+' L:'+L.toFixed(0)+' C:'+C.toFixed(0); statusEl.style.color='var(--teal)'; }
+  } else {
+    if(statusEl){ statusEl.textContent = instrLabel+' '+periodLabel+' pivots · PP ₹'+P.toFixed(2)+' · H:'+H.toFixed(0)+' L:'+L.toFixed(0)+' C:'+C.toFixed(0); statusEl.style.color='var(--teal)'; }
+  }
+}
+
+function psSelectSL(val, name, btn) {
+  document.getElementById('psSL').value = val.toFixed(2);
+  document.querySelectorAll('#psSLButtons button').forEach(b=>b.style.fontWeight='400');
+  if(btn) btn.style.fontWeight='700';
+  psRecomputeRR();
+  calcPositionSize();
+}
+
+function psSelectTarget(val, name, btn) {
+  document.getElementById('psTargetPrice').value = val.toFixed(2);
+  document.getElementById('psTargetHint').textContent = 'Target: '+name+' ₹'+val.toFixed(2);
+  document.querySelectorAll('#psTargetButtons button').forEach(b=>b.style.fontWeight='400');
+  if(btn) btn.style.fontWeight='700';
+  psRecomputeRR();
+  calcPositionSize();
+}
+
+function psRecomputeRR() {
+  const entry  = parseFloat(document.getElementById('psEntry')?.value)||0;
+  const sl     = parseFloat(document.getElementById('psSL')?.value)||0;
+  const target = parseFloat(document.getElementById('psTargetPrice')?.value)||0;
+  if (!entry||!sl||!target) return;
+  const risk   = Math.abs(entry-sl);
+  const reward = Math.abs(target-entry);
+  const rr     = risk>0 ? reward/risk : 2;
+  document.getElementById('psRR').value = Math.max(0.1, parseFloat(rr.toFixed(2)));
+}
+
+function psTargetChanged() {
+  psRecomputeRR();
+  calcPositionSize();
+}
+
+function psApplyPivotLevels() {
+  psLoadAndShowPivots();
+}
+function psSmartFill(mode, entry, sl) {
+  // R:R auto-determination:
+  // Options: aim for 2:1 minimum (options buying rule), but bump to 3:1 if near expiry
+  // Stocks: use 1.5:1 minimum for intraday, 2:1 for swing
+  const rr = mode === 'options' ? 2 : 1.5;
+  document.getElementById('psRR').value = rr;
+}
+
+function psSetIndexTarget(pts) {
+  const optType = document.getElementById('psOptType')?.value || 'CE';
+  // For PE, a negative index move is bullish (put goes up when index falls)
+  const signedPts = optType === 'PE' ? -pts : pts;
+  document.getElementById('psIndexTarget').value = pts;
+  // Highlight the clicked button
+  document.querySelectorAll('#psOptionsSelector .tf-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  psApplyIndexTarget();
+}
+
+function psApplyIndexTarget() {
+  const pts      = parseFloat(document.getElementById('psIndexTarget')?.value) || 0;
+  const entry    = parseFloat(document.getElementById('psEntry')?.value) || 0;
+  const sl       = parseFloat(document.getElementById('psSL')?.value) || 0;
+  const optType  = document.getElementById('psOptType')?.value || 'CE';
+  const indexKey = document.getElementById('psIndexSel')?.value || 'NSE_INDEX|Nifty 50';
+  const noteEl   = document.getElementById('psIndexTargetNote');
+  const spotEl   = document.getElementById('psSpotPrice');
+  const spot     = spotEl ? parseFloat(spotEl.textContent.replace(/[₹,]/g,'')) || 0 : 0;
+
+  if (!pts || !entry || !sl) { if (noteEl) noteEl.textContent = ''; return; }
+
+  // Delta-based premium target calculation
+  // Delta varies by moneyness. Use rough approximations:
+  // ATM (strike ≈ spot) → delta ≈ 0.50
+  // OTM 1 strike → delta ≈ 0.35
+  // OTM 2 strikes → delta ≈ 0.20
+  // ITM 1 strike → delta ≈ 0.65
+  const strikeEl  = document.getElementById('psStrike');
+  const strike    = parseFloat(strikeEl?.value) || spot;
+  const spacing   = PS_STRIKE_SPACING[indexKey] || 50;
+  const strikesOTM = Math.abs(strike - spot) / spacing;
+  const isITM     = optType === 'CE' ? strike < spot : strike > spot;
+  let delta;
+  if (isITM)               delta = strikesOTM <= 1 ? 0.65 : 0.75;
+  else if (strikesOTM < 1) delta = 0.50;
+  else if (strikesOTM < 2) delta = 0.35;
+  else if (strikesOTM < 3) delta = 0.22;
+  else                     delta = 0.12;
+
+  // Premium move = delta × index pts move
+  // Also add some gamma effect for larger moves: gamma ≈ 0.002 for ATM
+  const gamma = isITM ? 0.001 : strikesOTM < 1 ? 0.002 : 0.001;
+  const premiumMove = delta * pts + 0.5 * gamma * pts * pts;
+  const premiumTarget = entry + premiumMove;
+  const riskPerUnit   = Math.abs(entry - sl);
+  const rr = riskPerUnit > 0 ? (premiumMove / riskPerUnit).toFixed(1) : '—';
+
+  // Auto-update R:R field
+  if (riskPerUnit > 0) document.getElementById('psRR').value = Math.max(0.5, parseFloat(rr));
+
+  const indexTargetLevel = optType === 'CE' ? (spot || strike) + pts : (spot || strike) - pts;
+  if (noteEl) noteEl.textContent = '→ Premium target ₹'+premiumTarget.toFixed(1)+' · Delta '+delta.toFixed(2)+' · R:R 1:'+rr;
+
+  calcPositionSize();
+}
+
 // ── Position Size Calculator ──
 function calcPositionSize() {
-  const acc   = parseFloat(document.getElementById('psAccount')?.value)||0;
-  const risk  = parseFloat(document.getElementById('psRisk')?.value)||1;
-  const entry = parseFloat(document.getElementById('psEntry')?.value)||0;
-  const sl    = parseFloat(document.getElementById('psSL')?.value)||0;
-  const lot   = parseFloat(document.getElementById('psLot')?.value)||1;
-  if (!acc||!entry||!sl||entry===sl) return;
-  const riskAmt   = acc * (risk/100);
-  const slPerUnit = Math.abs(entry - sl);
-  const units     = Math.floor(riskAmt / slPerUnit);
-  const lots      = Math.floor(units / lot);
-  const capital   = units * entry;
-  const maxLoss   = units * slPerUnit;
-  document.getElementById('psShares').textContent = `${units.toLocaleString('en-IN')} units / ${lots} lots`;
-  document.getElementById('psDetail').textContent =
-    `Risk: ₹${riskAmt.toLocaleString('en-IN',{maximumFractionDigits:0})} · SL dist: ₹${slPerUnit.toFixed(1)} · Capital: ₹${capital.toLocaleString('en-IN',{maximumFractionDigits:0})} · Max loss: ₹${maxLoss.toLocaleString('en-IN',{maximumFractionDigits:0})}`;
+  const acc   = parseFloat(document.getElementById('psAccount')?.value) || 0;
+  const risk  = parseFloat(document.getElementById('psRisk')?.value)    || 1;
+  const entry = parseFloat(document.getElementById('psEntry')?.value)   || 0;
+  const sl    = parseFloat(document.getElementById('psSL')?.value)      || 0;
+  const rr    = parseFloat(document.getElementById('psRR')?.value)      || 2;
+  const lot   = parseFloat(document.getElementById('psLot')?.value)     || 1;
+  const targetOverride = parseFloat(document.getElementById('psTargetPrice')?.value) || 0;
+
+  const fmt = n => '₹' + Math.abs(n).toLocaleString('en-IN',{maximumFractionDigits:2});
+  const set = (id,val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
+
+  if (!acc||!entry||!sl||entry===sl) {
+    ['psShares','psLots','psCapUsed','psCapPct','psRiskAmt','psRiskUnit','psTarget','psTargetPnl','psTargetNote',
+     'psTradeType','psRRDisplay','psSLHit','psTgtHit','psRiskScore','psRiskScoreDetail'].forEach(id => set(id,'—'));
+    return;
+  }
+
+  const isLong      = sl < entry;
+  const tradeType   = isLong ? '📈 LONG' : '📉 SHORT';
+  const riskPerUnit = Math.abs(entry - sl);
+  const riskAmt     = acc * (risk / 100);
+
+  // ── SMART RISK SIZING ──
+  // Step 1: pure risk-based quantity
+  let riskUnits = riskPerUnit > 0 ? Math.floor(riskAmt / riskPerUnit) : 0;
+
+  // Step 2: capital-based constraint — never use more than 20% of capital
+  const maxCapPerTrade  = acc * 0.20;
+  const affordableUnits = entry > 0 ? Math.floor(maxCapPerTrade / entry) : 0;
+
+  // Step 3: hard 2% risk cap
+  const maxRiskUnits = riskPerUnit > 0 ? Math.floor((acc * 0.02) / riskPerUnit) : riskUnits;
+
+  // Step 4: for F&O, work in whole lots
+  let units;
+  if (lot > 1) {
+    const riskLots     = Math.floor(riskUnits / lot);
+    const affordLots   = Math.floor(affordableUnits / lot);
+    const maxRiskLots  = Math.floor(maxRiskUnits / lot);
+    // If risk gives 0 lots but capital can afford at least 1 lot, suggest 1 lot
+    // but flag it as above recommended risk
+    const safeLots = Math.min(Math.max(riskLots, 0), affordLots, Math.max(maxRiskLots, 0));
+    const minLots  = affordLots >= 1 ? 1 : 0; // can we afford even 1 lot?
+    units = safeLots > 0 ? safeLots * lot : (minLots > 0 ? lot : 0);
+  } else {
+    units = Math.min(riskUnits, affordableUnits, maxRiskUnits > 0 ? maxRiskUnits : riskUnits);
+    if (units < 0) units = 0;
+  }
+
+  const lots      = lot > 1 ? Math.floor(units / lot) : units;
+  const oneLotCost = lot > 1 ? lot * entry : entry;
+  const canAfford1Lot = oneLotCost <= acc * 0.5;
+  const isAboveRisk   = units > 0 && (units * riskPerUnit / acc * 100) > 2;
+  const capUsed   = units * entry;
+  const capPct    = acc > 0 ? (capUsed / acc * 100) : 0;
+  const capRem    = acc - capUsed;
+  const target    = targetOverride > 0 ? targetOverride : (isLong ? entry + riskPerUnit*rr : entry - riskPerUnit*rr);
+  const pnlSL     = -(units * riskPerUnit);
+  const pnlTgt    =  units * riskPerUnit * rr;
+  const actualRisk = units > 0 ? (units * riskPerUnit / acc * 100) : 0;
+  // Affordable lot info for display
+  const totalAffordLots = lot > 1 ? Math.floor(affordableUnits / lot) : affordableUnits;
+  const totalAffordCost = totalAffordLots * oneLotCost;
+
+
+  // ── RISK QUALITY SCORE — 8 dimensions ──
+  let score = 100;
+  const issues = [], positives = [], warnings = [];
+  const slPct       = (riskPerUnit / entry) * 100;
+  const isOptions   = lot > 1;
+  // Estimate brokerage: ₹20 flat per leg × 2 legs (Zerodha/Upstox style)
+  const brokerage   = 40;
+  const brokerageRisk = riskAmt > 0 ? (brokerage / (units * riskPerUnit)) * 100 : 0;
+  // Reward in ₹
+  const rewardRs    = units * riskPerUnit * rr;
+
+  // 1. R:R RATIO
+  if (rr >= 3)       { score += 5; positives.push('R:R ≥ 3:1 🏆'); }
+  else if (rr >= 2)  { positives.push('R:R ≥ 2:1 ✓'); }
+  else if (rr >= 1.5){ score -= 15; warnings.push('R:R 1:'+rr+' — minimum 2:1 recommended'); }
+  else               { score -= 30; issues.push('R:R < 1.5 — not worth the risk'); }
+
+  // 2. ACTUAL RISK % OF CAPITAL
+  if (actualRisk <= 1)      { positives.push('Risk '+actualRisk.toFixed(2)+'% ≤ 1% ✓'); }
+  else if (actualRisk <= 2) { positives.push('Risk '+actualRisk.toFixed(2)+'% ≤ 2% ✓'); }
+  else if (actualRisk <= 3) { score -= 15; warnings.push('Risk '+actualRisk.toFixed(2)+'% is above 2% limit'); }
+  else                      { score -= 30; issues.push('Risk '+actualRisk.toFixed(2)+'% — dangerously high'); }
+
+  // 3. CAPITAL ALLOCATION
+  if (capPct <= 10)       { positives.push('Capital '+capPct.toFixed(1)+'% — well diversified ✓'); }
+  else if (capPct <= 20)  { score -= 5; warnings.push('Capital '+capPct.toFixed(1)+'% deployed — acceptable'); }
+  else if (capPct <= 35)  { score -= 15; issues.push('Capital '+capPct.toFixed(1)+'% — overexposed, max 20%'); }
+  else                    { score -= 25; issues.push('Capital '+capPct.toFixed(1)+'% — severely overexposed'); }
+
+  // 4. SL DISTANCE vs TYPICAL VOLATILITY
+  if (isOptions) {
+    // For options: SL as % of premium
+    if (slPct >= 30 && slPct <= 60)  { positives.push('SL '+slPct.toFixed(0)+'% of premium — standard ✓'); }
+    else if (slPct < 30)             { score -= 10; warnings.push('SL '+slPct.toFixed(0)+'% very tight — likely to be stopped out'); }
+    else                             { score -= 5;  warnings.push('SL '+slPct.toFixed(0)+'% wide — high capital risk per trade'); }
+  } else {
+    // For stocks: SL should be 1.5–3% (enough to avoid noise, not too wide)
+    if (slPct < 0.8)       { score -= 20; issues.push('SL '+slPct.toFixed(2)+'% too tight — will be stopped by noise'); }
+    else if (slPct <= 2)   { score -= 5; warnings.push('SL '+slPct.toFixed(2)+'% — may be inside daily ATR noise'); }
+    else if (slPct <= 3)   { positives.push('SL '+slPct.toFixed(2)+'% — good buffer from noise ✓'); }
+    else                   { score -= 10; warnings.push('SL '+slPct.toFixed(2)+'% wide — reduces qty significantly'); }
+  }
+
+  // 5. REWARD IN ₹ vs BROKERAGE (minimum viable trade)
+  if (!isOptions) {
+    if (brokerageRisk > 20)  { score -= 20; issues.push('Brokerage ₹'+brokerage+' = '+brokerageRisk.toFixed(0)+'% of risk — trade too small to be profitable'); }
+    else if (brokerageRisk > 10) { score -= 10; warnings.push('Brokerage ₹'+brokerage+' = '+brokerageRisk.toFixed(0)+'% of risk — consider larger size'); }
+    else                     { positives.push('Brokerage '+brokerageRisk.toFixed(1)+'% of risk — viable ✓'); }
+  }
+
+  // 6. MINIMUM REWARD ₹ (is this trade worth taking?)
+  if (rewardRs < 200 && !isOptions)    { score -= 15; issues.push('Target profit ₹'+rewardRs.toFixed(0)+' too small — cover brokerage+slippage'); }
+  else if (rewardRs < 500 && !isOptions){ score -= 5; warnings.push('Target profit ₹'+rewardRs.toFixed(0)+' — borderline after costs'); }
+  else if (rewardRs > 0)               { positives.push('Target profit ₹'+rewardRs.toLocaleString('en-IN',{maximumFractionDigits:0})+' ✓'); }
+
+  // 7. POSITION vs AVAILABLE CAPITAL (is there diversification room?)
+  if (capPct > 0 && capPct <= 10)     { positives.push('Room for 9 more trades at same size ✓'); }
+  else if (capPct <= 20)              { positives.push('Room for 4 more trades at same size'); }
+  else if (capPct <= 50)              { warnings.push('Only room for '+Math.floor(100/capPct)+' trades — limited diversification'); }
+
+  // 8. OPTIONS-SPECIFIC: premium as % of spot (is it too expensive?)
+  if (isOptions && lot > 1) {
+    const premiumPct = (entry / (document.getElementById('psSpotPrice')?.textContent.replace(/[₹,]/g,'') || 1)) * 100;
+    if (premiumPct > 2)    { score -= 10; warnings.push('Premium '+premiumPct.toFixed(1)+'% of spot — expensive option'); }
+    else if (premiumPct > 0) { positives.push('Premium cost '+premiumPct.toFixed(2)+'% of spot ✓'); }
+  }
+
+  score = Math.max(0, Math.min(100, score));
+  const scoreColor = score >= 80?'var(--green)':score>=60?'var(--teal)':score>=45?'var(--amber)':'var(--red)';
+  const scoreLbl   = score >= 80?'EXCELLENT':score>=60?'GOOD':score>=45?'ACCEPTABLE':'NEEDS WORK';
+
+  // Build smart quantity label
+  let quantityLabel, lotsLabel;
+  if (units === 0) {
+    quantityLabel = '0 units';
+    lotsLabel = lot > 1
+      ? '⚠ Capital ₹'+acc.toLocaleString('en-IN')+' is too small for 1 lot (costs ₹'+oneLotCost.toLocaleString('en-IN',{maximumFractionDigits:0})+')'
+      : 'Insufficient capital for this risk %';
+  } else {
+    quantityLabel = units.toLocaleString('en-IN') + ' units';
+    if (lot > 1) {
+      const aboveRiskNote = isAboveRisk ? ' ⚠ above recommended risk' : '';
+      lotsLabel = lots + ' lot' + (lots!==1?'s':'') + ' × ₹' + oneLotCost.toLocaleString('en-IN',{maximumFractionDigits:0}) + ' per lot' + aboveRiskNote;
+    } else {
+      lotsLabel = 'equity position · ₹' + capUsed.toLocaleString('en-IN',{maximumFractionDigits:0}) + ' total';
+    }
+  }
+
+  set('psShares',   quantityLabel);
+  set('psLots',     lotsLabel);
+  set('psCapUsed',  fmt(capUsed));
+  set('psCapPct',   capPct.toFixed(1)+'% of capital'+(capPct>100?' ⚠ EXCEEDS CAPITAL':''));
+  set('psRiskAmt',  fmt(units * riskPerUnit));
+  set('psRiskUnit', fmt(riskPerUnit)+' risk/unit · actual '+actualRisk.toFixed(2)+'% of capital');
+  set('psTarget',   fmt(target));
+  set('psTargetPnl','₹'+pnlTgt.toLocaleString('en-IN',{maximumFractionDigits:0})+' profit');
+
+  // Target explanation
+  let targetNote = '';
+  if (lot > 1) {
+    // For options: target is premium exit price derived from index target pts
+    // Show what index move is implied by this premium target
+    const indexTargetEl = document.getElementById('psIndexTarget');
+    const indexPts = parseFloat(indexTargetEl?.value) || 0;
+    const spotEl = document.getElementById('psSpotPrice');
+    const spot = spotEl ? parseFloat(spotEl.textContent.replace(/[₹,]/g,'')) || 0 : 0;
+    if (indexPts > 0 && spot > 0) {
+      const indexTargetLevel = isLong ? spot + indexPts : spot - indexPts;
+      targetNote = 'Exit premium ₹'+target.toFixed(1)+' when index reaches ~'+indexTargetLevel.toLocaleString('en-IN',{maximumFractionDigits:0})+' ('+indexPts+' pt move)';
+    } else {
+      targetNote = 'Exit option premium at ₹'+target.toFixed(1)+' · Set index target above for realistic levels';
+    }
+  } else {
+    targetNote = 'Exit stock at ₹'+target.toFixed(2);
+  }
+  set('psTargetNote', targetNote);
+  set('psTradeType', tradeType + (isAboveRisk ? ' ⚠' : ''));
+  set('psRRDisplay', 'R:R = 1:'+rr);
+  set('psSLHit',    '-₹'+Math.abs(pnlSL).toLocaleString('en-IN',{maximumFractionDigits:0}));
+  set('psTgtHit',   '+₹'+pnlTgt.toLocaleString('en-IN',{maximumFractionDigits:0}));
+  set('psCapUsed2', fmt(capUsed));
+  set('psCapRem',   fmt(Math.max(0,capRem)));
+
+  const capUsedEl = document.getElementById('psCapUsed');
+  if (capUsedEl) capUsedEl.style.color = capPct>100 ? 'var(--red)' : 'var(--teal)';
+  const bar = document.getElementById('psCapBar');
+  if (bar) { bar.style.width = Math.min(100,capPct).toFixed(1)+'%'; bar.style.background = capPct>80?'var(--red)':capPct>50?'var(--amber)':'linear-gradient(90deg,var(--teal),var(--accent))'; }
+
+  // Risk score display
+  const scoreEl = document.getElementById('psRiskScore');
+  if (scoreEl) { scoreEl.textContent = score+' / 100 — '+scoreLbl; scoreEl.style.color = scoreColor; }
+  const detailEl = document.getElementById('psRiskScoreDetail');
+  if (detailEl) {
+    let html = '';
+    html += positives.map(p=>'<span style="color:var(--green);margin-right:10px;display:inline-block">✓ '+p+'</span>').join('');
+    html += warnings.map(w=>'<span style="color:var(--amber);margin-right:10px;display:inline-block">⚠ '+w+'</span>').join('');
+    html += issues.map(i=>'<span style="color:var(--red);margin-right:10px;display:inline-block">✗ '+i+'</span>').join('');
+    // Retail trader summary suggestion
+    const suggArr = [];
+    if (rr < 2)        suggArr.push('increase target to R:R 1:2+');
+    if (slPct < 0.8 && !isOptions) suggArr.push('widen SL to at least 1.5× daily ATR (~₹'+(entry*0.015).toFixed(0)+' below entry)');
+    if (rewardRs < 300 && !isOptions) suggArr.push('increase position size or target');
+    if (brokerageRisk > 15 && !isOptions) suggArr.push('too small to trade profitably — increase size or skip');
+    if (suggArr.length > 0) {
+      html += '<br><span style="color:var(--teal);font-size:9px;margin-top:4px;display:block">💡 Suggestions: '+suggArr.join(' · ')+'</span>';
+    }
+    // Capital info for F&O
+    if (lot > 1 && totalAffordLots > 0) {
+      html += '<br><span style="color:var(--text3);font-size:9px">Capital ₹'+acc.toLocaleString('en-IN')+' → max '+totalAffordLots+' lot'+(totalAffordLots!==1?'s':'')+' within 20% cap (₹'+totalAffordCost.toLocaleString('en-IN',{maximumFractionDigits:0})+') · Safe: '+lots+' lot'+(lots!==1?'s':'')+'</span>';
+    } else if (lot > 1 && totalAffordLots === 0) {
+      const indexKey = document.getElementById('psIndexSel')?.value || 'NSE_INDEX|Nifty 50';
+      const approxCap = PS_LOT_CAPITAL[indexKey] || 12094;
+      html += '<br><span style="color:var(--amber);font-size:9px">⚠ 1 lot = ₹'+oneLotCost.toLocaleString('en-IN',{maximumFractionDigits:0})+' · Need ≈ ₹'+approxCap.toLocaleString('en-IN')+' for safe 1-lot trade</span>';
+    }
+    detailEl.innerHTML = html;
+  }
 }
 
 // ── CPR Calculator ──
+// Global CPR levels cache — used by position sizer
+window.pivotLevels = null;
+
 function calcCPR() {
   const H = parseFloat(document.getElementById('cprH')?.value)||0;
   const L = parseFloat(document.getElementById('cprL')?.value)||0;
@@ -3956,6 +4890,23 @@ function calcCPR() {
   const TC = (P-BC)+P;
   const R1 = 2*P-L, R2 = P+(H-L), R3 = H+2*(P-L);
   const S1 = 2*P-H, S2 = P-(H-L), S3 = L-2*(H-P);
+
+  // Store globally — ordered resistance high→low, support low→high
+  window.pivotLevels = {
+    resistance: [
+      { name:'R3', value:R3 }, { name:'R2', value:R2 },
+      { name:'R1', value:R1 }, { name:'TC',  value:TC },
+      { name:'PP', value:P  }
+    ].sort((a,b)=>b.value-a.value),
+    support: [
+      { name:'PP', value:P  }, { name:'BC',  value:BC },
+      { name:'S1', value:S1 }, { name:'S2',  value:S2 },
+      { name:'S3', value:S3 }
+    ].sort((a,b)=>a.value-b.value),
+    all: [R3,R2,R1,TC,P,BC,S1,S2,S3],
+    PP:P, TC:TC, BC:BC, R1:R1, R2:R2, R3:R3, S1:S1, S2:S2, S3:S3
+  };
+
   const f  = v => v.toFixed(2);
   document.getElementById('cprLevels').innerHTML = [
     ['R3','R3 — Strong Resistance',R3,'r3'],
